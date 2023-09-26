@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPJS DEMO</title>
+  <script src="https://guest.feige.cn/feige.im/js/sip.js"></script>
+</head>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+  }
+
+  .step {
+    width: 500px;
+    text-align: left;
+  }
+
+  span {
+    display: inline-block;
+    width: 80px;
+    text-align: right;
+  }
+
+  input {
+    margin-left: 10px;
+    height: 24px;
+  }
+
+  button {
+    width: 70px;
+    height: 30px;
+    margin-left: 10px;
+  }
+
+  .keys span {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    border: 1px solid #000;
+  }
+
+  .keys span:active {
+    background-color: #f5f5f5;
+  }
+</style>
+
+<body>
+  <div class="step">
+    <h4>1,登录注册 (获取参数地址: https://chat.feige.cn/api/sipjs.html)</h4>
+    <p><span>分机号</span> <input type="text" id="extensionNumber"></p>
+    <p><span>密码</span> <input type="text" id="password"></p>
+    <p><span>公司ID</span> <input type="text" id="companyId"></p>
+    <p><span>域名</span> <input type="text" id="domain"></p>
+    <p><span>端口</span> <input type="text" id="wssPort"></p>
+    <p><span></span> <button onclick="login()">登录注册</button></p>
+    <h4>2,输入被叫号码点拨打</h4>
+    <p><span>被叫号码</span> <input type="text" id="phone"></p>
+    <p><span>回调地址</span> <input type="text" id="callBackurl"></p>
+    <p><span></span> <button onclick="call()">拨打</button> <button onclick="answer()">接听</button></p>
+    <h4>3,发送dtmf</h4>
+    <p class="keys">
+      <span onclick="dtmf(0)">0</span>
+      <span onclick="dtmf(1)">1</span>
+      <span onclick="dtmf(2)">2</span>
+      <span onclick="dtmf(3)">3</span>
+      <span onclick="dtmf(4)">4</span>
+      <span onclick="dtmf(5)">5</span>
+      <span onclick="dtmf(6)">6</span>
+      <span onclick="dtmf(7)">7</span>
+      <span onclick="dtmf(8)">8</span>
+      <span onclick="dtmf(9)">9</span>
+      <span onclick="dtmf('*')">*</span>
+      <span onclick="dtmf('#')">#</span>
+    </p>
+    <h4>4,静音 取消静音</h4>
+    <button onclick="mute()">静音</button>
+    <button onclick="unmute()">取消静音</button>
+    <h4>5,挂断 登出</h4>
+    <button onclick="hangup()">挂断</button>
+    <button onclick="logout()">登出</button>
+  </div>
+  <script>
+
+    /* 
+      webPhone 内部方法可直接调用
+      也可以自己声明变量赋值给声明的变量 例: let feigephone = webPhone
+    */
+    // 本地调试html 需要启一个本地服务 (在vscode编辑器中 下载Live Serve 插件  在html代码中 右键 Open with Live Serve 打开html文件)
+    // 登录
+    function login () {
+      var extensionNumber = document.getElementById("extensionNumber").value
+      var password = document.getElementById("password").value
+      var companyId = document.getElementById("companyId").value
+      var domain = document.getElementById("domain").value
+      var wssPort = document.getElementById("wssPort").value
+
+      webPhone.fgLogin(extensionNumber, password, companyId, domain, wssPort, fgCallback) // 分机号 分机密码 公司ID 域名 端口号 回调方法
+    }
+    // 拨打
+    function call () {
+      var phone = document.getElementById("phone").value
+      var callBackurl = document.getElementById("callBackurl").value
+      
+      //入参 callBackurl 需要符合这个正则 /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/
+      webPhone.fgCall(phone, callBackurl) // 被叫号码 通话记录回调地址 回调地址客户自己提供 不传则没有通话记录回调
+    }
+    // 接听
+    function answer () {
+      webPhone.fganswer()
+    }
+    // 发送dtmf
+    function dtmf (num) {
+      webPhone.fgsendDtmf(num)
+    }
+    // 静音
+    function mute () {
+      webPhone.fgmute()
+    }
+    // 取消静音
+    function unmute () {
+      webPhone.fgunmute()
+    }
+    // 挂断
+    function hangup () {
+      webPhone.fghangup()
+    }
+    // 登出
+    function logout () {
+      webPhone.fglogout()
+    }
+    // 通话状态回调
+    function fgCallback (response) {
+      /* 
+        connecting 表示正在连接
+        connected 表示连接成功
+        disconnected 表示连接失败
+        registered 表示注册成功 注册成功才可以进行拨打等操作 会在调用fgLogin() 方法之后三秒左右回调回来
+        unregistered 表示注册失败
+      */
+      console.log(response);
+      if (response.type == 'outgoing') { // 呼出
+        if (response.status == 'progress') {
+          /* 这里通常是呼出后 收到对方回铃音 也就是对方设备响铃 */
+        }
+        if (response.status == 'accepted') {
+          if (response.response.status_code == 200) {
+            /* 这里是对方已经接听 此时双方会话建立 可以正常通话 */
+          }
+        }
+        if (response.status == 'failed') {
+          /* 这里通常是会话建立失败 以及失败原因 */
+          // 如果提示原因是 不被接受 请保证注册成功并且在https环境下使用 ！！！ 
+        }
+        if (response.status == 'terminated') {
+          /*这里表示结束通话
+            originator: 'remote'  被叫主动结束通话
+            originator: 'local'  主叫主动结束通话
+          */
+        }
+
+      } else if (response.type == 'incoming') {  // 呼入
+        if (response.status == 'progress') {
+          /* 这里表示有电话呼入进来 此时可以在这里设置自己的来电音频 等接听通话或者结束通话时结束音频播放*/
+        }
+        if (response.status == 'accepted') {
+          /* 这里表示被叫点了接听 此时双方会话建立 */
+        }
+        if (response.status == 'failed') {
+          /* 这里通常是会话建立失败 以及失败原因 */
+        }
+        if (response.status == 'terminated') {
+          /*  这里表示结束通话 */
+        }
+      }
+      // dtmf 是否发送成功
+      if (response.type == 'dtmf') {
+        // console.log(response);
+      }
+      // 通话静音
+      if (response.type == 'mute') {
+        // console.log(response);
+      }
+      // 取消静音
+      if (response.type == 'unmuted') {
+        // console.log(response);
+      }
+
+    }
+
+  </script>
+</body>
+
+</html>
