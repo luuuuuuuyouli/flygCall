@@ -53,7 +53,7 @@
 <body>
   <div class="step">
     <h4>1,登录注册 (获取参数地址: https://chat.feige.cn/api/sipjs.html)</h4>
-    <p><span>分机号</span> <input type="text" id="extensionNumber" value="L0V064kDvm1TLfjn"></p>
+    <p><span>分机号</span> <input type="text" id="extensionNumber" value="8002"></p>
     <p><span>密码</span> <input type="text" id="password" value="N8ONp2205IXbf8j71w"></p>
     <p><span>公司ID</span> <input type="text" id="companyId" value="12663"></p>
     <p><span>域名</span> <input type="text" id="domain" value="fs.feige.cn"></p>
@@ -96,6 +96,7 @@
       也可以自己声明变量赋值给声明的变量 例: let feigephone = webPhone
     */
     // 本地调试html 需要启一个本地服务 (在vscode编辑器中 下载Live Serve 插件  在html代码中 右键 Open with Live Serve 打开html文件)
+    let feigephone = webPhone
     // 登录
     function login () {
       var extensionNumber = document.getElementById("extensionNumber").value
@@ -103,7 +104,7 @@
       var companyId = document.getElementById("companyId").value
       var domain = document.getElementById("domain").value
       var wssPort = document.getElementById("wssPort").value
-      webPhone.fgLogin(extensionNumber, password, companyId, domain, wssPort, fgCallback) // 分机号 分机密码 公司ID 域名 端口号 回调方法
+      feigephone.fgLogin(extensionNumber, password, companyId, domain, wssPort, fgCallback) // 分机号 分机密码 公司ID 域名 端口号 回调方法
     }
     // 拨打
     function call () {
@@ -111,31 +112,31 @@
       var callBackurl = document.getElementById("callBackurl").value
       console.log('拨打')
       //入参 callBackurl 需要符合这个正则 /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/
-      webPhone.fgCall(phone) // 被叫号码 通话记录回调地址 回调地址客户自己提供 不传则没有通话记录回调
+      feigephone.fgCall(phone) // 被叫号码 通话记录回调地址 回调地址客户自己提供 不传则没有通话记录回调
     }
     // 接听
     function answer () {
-      webPhone.fganswer()
+      feigephone.fganswer()
     }
     // 发送dtmf
     function dtmf (num) {
-      webPhone.fgsendDtmf(num)
+      feigephone.fgsendDtmf(num)
     }
     // 静音
     function mute () {
-      webPhone.fgmute()
+      feigephone.fgmute()
     }
     // 取消静音
     function unmute () {
-      webPhone.fgunmute()
+      feigephone.fgunmute()
     }
     // 挂断
     function hangup () {
-      webPhone.fghangup()
+      feigephone.fghangup()
     }
     // 登出
     function logout () {
-      webPhone.fglogout()
+      feigephone.fglogout()
     }
     document.getElementById("callLog").html = "ss"
     // 通话状态回调
