@@ -106,7 +106,7 @@
     function call () {
       var phone = document.getElementById("phone").value
       var callBackurl = document.getElementById("callBackurl").value
-      
+      console.log('拨打')
       //入参 callBackurl 需要符合这个正则 /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/
       webPhone.fgCall(phone, callBackurl) // 被叫号码 通话记录回调地址 回调地址客户自己提供 不传则没有通话记录回调
     }
@@ -147,35 +147,43 @@
       if (response.type == 'outgoing') { // 呼出
         if (response.status == 'progress') {
           /* 这里通常是呼出后 收到对方回铃音 也就是对方设备响铃 */
+          console.log('呼出中...')
         }
         if (response.status == 'accepted') {
           if (response.response.status_code == 200) {
             /* 这里是对方已经接听 此时双方会话建立 可以正常通话 */
+            console.log('已接听...')
           }
         }
         if (response.status == 'failed') {
           /* 这里通常是会话建立失败 以及失败原因 */
           // 如果提示原因是 不被接受 请保证注册成功并且在https环境下使用 ！！！ 
+          console.log('会话失败...')
         }
         if (response.status == 'terminated') {
           /*这里表示结束通话
             originator: 'remote'  被叫主动结束通话
             originator: 'local'  主叫主动结束通话
           */
+           console.log('结束通话...')
         }
 
       } else if (response.type == 'incoming') {  // 呼入
         if (response.status == 'progress') {
           /* 这里表示有电话呼入进来 此时可以在这里设置自己的来电音频 等接听通话或者结束通话时结束音频播放*/
+           console.log('呼入...')
         }
         if (response.status == 'accepted') {
           /* 这里表示被叫点了接听 此时双方会话建立 */
+           console.log('我接听了...')
         }
         if (response.status == 'failed') {
           /* 这里通常是会话建立失败 以及失败原因 */
+          console.log('我接听失败...')
         }
         if (response.status == 'terminated') {
           /*  这里表示结束通话 */
+          console.log('我接听结束通话...')
         }
       }
       // dtmf 是否发送成功
@@ -184,11 +192,11 @@
       }
       // 通话静音
       if (response.type == 'mute') {
-        // console.log(response);
+         console.log(response);
       }
       // 取消静音
       if (response.type == 'unmuted') {
-        // console.log(response);
+         console.log(response);
       }
 
     }
