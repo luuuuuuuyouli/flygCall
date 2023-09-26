@@ -111,7 +111,7 @@
       var callBackurl = document.getElementById("callBackurl").value
       console.log('拨打')
       //入参 callBackurl 需要符合这个正则 /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/
-      webPhone.fgCall(phone, callBackurl) // 被叫号码 通话记录回调地址 回调地址客户自己提供 不传则没有通话记录回调
+      webPhone.fgCall(phone) // 被叫号码 通话记录回调地址 回调地址客户自己提供 不传则没有通话记录回调
     }
     // 接听
     function answer () {
