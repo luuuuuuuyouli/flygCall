@@ -63,6 +63,10 @@
     <p><span>被叫号码</span> <input type="text" id="phone"></p>
     <p><span>回调地址</span> <input type="text" id="callBackurl"></p>
     <p><span></span> <button onclick="call()">拨打</button> <button onclick="answer()">接听</button></p>
+    <span>登录日志：</span>
+    <span style="color:red;" id="conectLog"></span>
+    <span>拨号日志：</span>
+    <span style="color:red;" id="callLog"></span>
     <h4>3,发送dtmf</h4>
     <p class="keys">
       <span onclick="dtmf(0)">0</span>
@@ -99,7 +103,6 @@
       var companyId = document.getElementById("companyId").value
       var domain = document.getElementById("domain").value
       var wssPort = document.getElementById("wssPort").value
-
       webPhone.fgLogin(extensionNumber, password, companyId, domain, wssPort, fgCallback) // 分机号 分机密码 公司ID 域名 端口号 回调方法
     }
     // 拨打
@@ -134,6 +137,7 @@
     function logout () {
       webPhone.fglogout()
     }
+    document.getElementById("callLog").html = "ss"
     // 通话状态回调
     function fgCallback (response) {
       /* 
@@ -144,6 +148,11 @@
         unregistered 表示注册失败
       */
       console.log(response);
+      if(response.remark){
+          document.getElementById("callLog").textContent = response.remark
+      }else{
+          document.getElementById("conectLog").textContent = response
+      }
       if (response.type == 'outgoing') { // 呼出
         if (response.status == 'progress') {
           /* 这里通常是呼出后 收到对方回铃音 也就是对方设备响铃 */
