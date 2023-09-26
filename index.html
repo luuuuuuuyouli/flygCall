@@ -149,7 +149,7 @@
       */
       console.log(response);
       if(response.remark){
-          document.getElementById("callLog").textContent = response.remark
+          document.getElementById("callLog").textContent = JSON.stringify(response)
       }else{
           document.getElementById("conectLog").textContent = response
       }
